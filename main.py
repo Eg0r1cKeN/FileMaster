@@ -43,8 +43,7 @@ def reqister():
                                    message="Такой пользователь уже есть")
         user = User(
             name=form.name.data,
-            email=form.email.data,
-            about=form.about.data
+            email=form.email.data
         )
         user.set_password(form.password.data)
         db_sess.add(user)
@@ -101,9 +100,6 @@ def new_user():
     return user.name
 
 
-
-
-
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': error}), 404)
@@ -115,5 +111,5 @@ def bad_request(_):
 
 
 if __name__ == '__main__':
-    db_session.global_init("db/blogs.db")
+    db_session.global_init("db/database.db")
     app.run(port=8080, host='127.0.0.1')
