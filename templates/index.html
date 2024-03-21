@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width*2, initial-scale=1, shrink-to-fit=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="stylesheet"
               href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
               integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
@@ -23,5 +23,27 @@
         <link href="static/css/style.css" type="text/css" rel="stylesheet">
         <p class="effect">FileMaster</p>
         <p>Этот стиль временный (наверное)</p>
+        <svg height="width">
+          <filter id="filter">
+
+            <!-- faking background-clip:text -->
+            <feImage xlink:href="http://www.css3create.com/squelettes/images/articles/grass-texture.jpg" width="450" height="450" />
+            <feTile />
+            <feComposite in2="SourceGraphic" operator="in" result="r1"/>
+
+            <!-- add an outer shadow -->
+            <feFlood in="sourceAlpha" flood-color="rgba(0,0,0,.9)" />
+            <feComposite in2="SourceAlpha" operator="in" />
+            <feGaussianBlur stdDeviation="3"/>
+            <feOffset dx="0" dy="6" result="r2"/>
+
+            <!-- merge -->
+            <feMerge>
+              <feMergeNode in="r2"/>
+              <feMergeNode in="r1"/>
+            </feMerge>
+
+          </filter>
+        </svg>
         </body>
 </html>
