@@ -1,9 +1,7 @@
-import json
 from flask_login import LoginManager, logout_user, login_required, current_user, login_user
 from flask import Flask, render_template, url_for, redirect, request, make_response, session, abort, jsonify
 
 import news_resources
-from data import db_session
 from data.news import News
 from data.users import User
 from forms.loginform import LoginForm
