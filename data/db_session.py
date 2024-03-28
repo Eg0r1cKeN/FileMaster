@@ -6,6 +6,7 @@ SqlAlchemyBase = orm.declarative_base()
 
 __factory = None
 
+
 def global_init(db_file):
     global __factory
 
@@ -20,7 +21,6 @@ def global_init(db_file):
 
     engine = sa.create_engine(conn_str, echo=False)
     __factory = orm.sessionmaker(bind=engine)
-
 
     SqlAlchemyBase.metadata.create_all(engine)
 

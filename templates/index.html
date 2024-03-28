@@ -10,7 +10,7 @@
         <title>{{title}}</title>
     </head>
     <body>
-     <header>
+        <header>
             {% if current_user.is_authenticated %}
                 <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
             {% else %}
@@ -19,31 +19,31 @@
                     <a class="btn btn-success" href="/login">Войти</a>
                 </p>
             {% endif %}
+                    <link href="static/css/style.css" type="text/css" rel="stylesheet">
+            <p class="effect">FileMaster</p>
+            <p>Этот стиль временный (наверное)</p>
+            <svg height="width">
+              <filter id="filter">
+
+                <!-- faking background-clip:text -->
+                <feImage xlink:href="http://www.css3create.com/squelettes/images/articles/grass-texture.jpg" width="450" height="450" />
+                <feTile />
+                <feComposite in2="SourceGraphic" operator="in" result="r1"/>
+
+                <!-- add an outer shadow -->
+                <feFlood in="sourceAlpha" flood-color="rgba(0,0,0,.9)" />
+                <feComposite in2="SourceAlpha" operator="in" />
+                <feGaussianBlur stdDeviation="3"/>
+                <feOffset dx="0" dy="6" result="r2"/>
+
+                <!-- merge -->
+                <feMerge>
+                  <feMergeNode in="r2"/>
+                  <feMergeNode in="r1"/>
+                </feMerge>
+
+              </filter>
+            </svg>
         </header>
-        <link href="static/css/style.css" type="text/css" rel="stylesheet">
-        <p class="effect">FileMaster</p>
-        <p>Этот стиль временный (наверное)</p>
-        <svg height="width">
-          <filter id="filter">
-
-            <!-- faking background-clip:text -->
-            <feImage xlink:href="http://www.css3create.com/squelettes/images/articles/grass-texture.jpg" width="450" height="450" />
-            <feTile />
-            <feComposite in2="SourceGraphic" operator="in" result="r1"/>
-
-            <!-- add an outer shadow -->
-            <feFlood in="sourceAlpha" flood-color="rgba(0,0,0,.9)" />
-            <feComposite in2="SourceAlpha" operator="in" />
-            <feGaussianBlur stdDeviation="3"/>
-            <feOffset dx="0" dy="6" result="r2"/>
-
-            <!-- merge -->
-            <feMerge>
-              <feMergeNode in="r2"/>
-              <feMergeNode in="r1"/>
-            </feMerge>
-
-          </filter>
-        </svg>
         </body>
 </html>
