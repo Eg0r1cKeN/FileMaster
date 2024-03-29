@@ -15,13 +15,34 @@
                 <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
             {% else %}
                 <p>
-                    <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
+                    <a class="btn btn-primary" href="/register">Зарегистрироваться</a>
                     <a class="btn btn-success" href="/login">Войти</a>
                 </p>
             {% endif %}
                     <link href="static/css/style.css" type="text/css" rel="stylesheet">
             <p class="effect">FileMaster</p>
-            <p>Этот стиль временный (наверное)</p>
+            {% if current_user.is_authenticated %}
+                {% for file in files %}
+                    <p>
+                        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                          <div onclick="window.location.href = '/download/{{ file.id }}'"
+                               class="btn-group mr-2" role="group" aria-label="First group">
+                            <button type="button" class="btn btn-secondary">{{ file.filename }}</button>
+
+                          </div>
+                          <div onclick="window.location.href = '/delete/{{ file.id }}'"
+                               class="btn-group mr-2" role="group" aria-label="Second group">
+                            <button type="button" class="btn btn-danger">
+                                <img src="static/img/delete_btn.png" alt="Удалить" style="width: 23px; height: 23px;">
+                                </button>
+                          </div>
+                        </div>
+                    </p>
+                {% endfor %}
+            {% endif %}
+            {% if current_user.is_authenticated %}
+                <a class="btn btn-success" href="/upload">Загрузить файл</a>
+            {% endif %}
             <svg height="width">
               <filter id="filter">
 

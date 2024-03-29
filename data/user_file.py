@@ -7,7 +7,7 @@ from .db_session import SqlAlchemyBase
 from sqlalchemy import orm
 
 
-class File(SqlAlchemyBase, UserMixin, SerializerMixin):
+class UserFile(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'files'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)

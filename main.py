@@ -1,11 +1,13 @@
-from flask import Flask, render_template, redirect, make_response, jsonify, request
-from flask_login import LoginManager, logout_user, login_required, login_user, current_user
+from flask import Flask, render_template, redirect, make_response, jsonify, request, send_from_directory, send_file
+from flask_login import LoginManager, logout_user, login_required, login_user, current_user, AnonymousUserMixin
 from flask_restful import Api
 from data.users import User
-from data.file import File
+from data.user_file import UserFile
 from data import db_session
 from forms.loginform import LoginForm
 from forms.user import RegisterForm
+from io import BytesIO
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -21,10 +23,22 @@ def load_user(user_id):
     return db_sess.query(User).get(user_id)
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                          'favicon.ico',mimetype='image/vnd.microsoft.icon')
+
+
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template("index.html")
+    db_sess = db_session.create_session()
+    if current_user.is_authenticated:
+        print(1)
+        files = db_sess.query(UserFile).filter(UserFile.owner == current_user.id).all()
+    else:
+        files = None
+    return render_template("index.html", files=files)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -97,29 +111,44 @@ def new_user():
     return user.name
 
 
-@login_required
 @app.route('/upload', methods=['GET', 'POST'])
+@login_required
 def upload():
     if request.method == 'POST':
         db_sess = db_session.create_session()
         user = current_user
         file = request.files['file']
-        db_file = File()
+        db_file = UserFile()
         db_file.filename = file.filename
         db_file.owner = user.id
         db_file.data = file.read()
         db_sess.add(db_file)
         db_sess.commit()
-        return f'Uploaded: {file.filename}'
+        return redirect("/")
     return render_template('file_upload.html')
 
 
 # create download function for download files
 @app.route('/download/<upload_id>')
+@login_required
 def download(upload_id):
-    upload = Upload.query.filter_by(id=upload_id).first()
-    return send_file(BytesIO(upload.data),
-                     download_name=upload.filename, as_attachment=True)
+    db_sess = db_session.create_session()
+    file = db_sess.query(UserFile).filter_by(id=upload_id).first()
+    if current_user.id == file.owner == current_user.id:
+        return send_file(BytesIO(file.data), download_name=file.filename, as_attachment=True)
+    else:
+        return
+
+
+@app.route('/delete/<upload_id>')
+@login_required
+def delete(upload_id):
+    db_sess = db_session.create_session()
+    file = db_sess.query(UserFile).filter_by(id=upload_id).first()
+    if current_user.id == file.owner == current_user.id:
+        db_sess.delete(file)
+        db_sess.commit()
+        return redirect("/")
 
 
 @app.errorhandler(404)

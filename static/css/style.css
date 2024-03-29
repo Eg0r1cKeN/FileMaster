@@ -6,6 +6,11 @@
   text-shadow: 0 6px 3px rgba(0,0,0,.9)
 }
 
+.inner
+{
+    display: inline-block;
+}
+
 /* if -webkit-background-clip: text and @supports are supported */
 @supports (-webkit-background-clip: text) {
 
