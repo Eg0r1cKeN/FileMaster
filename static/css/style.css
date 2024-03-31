@@ -1,15 +1,21 @@
 .effect {
-  font: bold 12em sans-serif;
+  font: bold 5em sans-serif;
   text-align: center;
   margin: .5em 0 0 0;
   color: green; /* fallback */
   text-shadow: 0 6px 3px rgba(0,0,0,.9)
 }
 
+.inner
+{
+    display: inline-block;
+}
+
 /* if -webkit-background-clip: text and @supports are supported */
 @supports (-webkit-background-clip: text) {
 
     .effect {
+        text-align: left;
         background: url('http://www.css3create.com/squelettes/images/articles/grass-texture.jpg');
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -33,6 +39,7 @@
 
 html {
   background: #222;
-  text-align: center;
+  text-align: top;
   color: #aaa;
 }
+
