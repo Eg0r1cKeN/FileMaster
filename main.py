@@ -7,7 +7,9 @@ from data import db_session
 from forms.loginform import LoginForm
 from forms.user import RegisterForm
 from io import BytesIO
+import aspose.words as aw
 import os
+from conversions import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -38,6 +40,8 @@ def index():
         files = db_sess.query(UserFile).filter(UserFile.owner == current_user.id).all()
     else:
         files = None
+    for file in files:
+        print(file)
     return render_template("index.html", files=files)
 
 
@@ -128,12 +132,23 @@ def upload():
     return render_template('file_upload.html')
 
 
-# конвертация файлов разных фогрматов
+# конвертация файлов разных форматов
 
 @app.route('/conversion/<upload_id>')
 @login_required
 def conversion(upload_id):
-    return render_template('conversion.html', name=conversion)
+    print(upload_id)
+    db_sess = db_session.create_session()
+    file = db_sess.query(UserFile).filter_by(id=upload_id).first()
+    if current_user.id == file.owner == current_user.id:
+        f = open("test.txt")
+        f.write(str(file.data))
+        doc = aw.Document("test.txt")
+        doc.save("Output.pdf")
+        print(file.data)
+
+        db_sess.commit()
+        return redirect("/")
 
 
 # create download function for download files

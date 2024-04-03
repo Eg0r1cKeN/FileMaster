@@ -36,13 +36,17 @@
                                 <img src="static/img/delete_btn.png" alt="Удалить" style="width: 23px; height: 23px;">
                                 </button>
                           </div>
-                          <div onclick="window.location.href = '/conversion/{{ file.id }}'"
+                    {% if ".txt" in file.filename %}
+                          <div onclick="window.location.href = '/conversion/{{ file.id}}'"
                                class="btn-group mr-2" role="group" aria-label="Third group">
                                <button type="button" class="btn btn-danger">
-                                <img src="static/img/delete_btn.png" alt="Конвертировать" style="width: 23px; height: 23px;">
+                                <img src="static/img/delete_btn.png" alt="Конвертировать в" style="width: 23px; height: 23px;">
                                 </button>
-
                           </div>
+                          <select name="format" id="format-select">
+                              <option value="PDF">PDF</option>
+                          </select>
+                    {% endif %}
                         </div>
                     </p>
                 {% endfor %}
