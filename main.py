@@ -9,7 +9,7 @@ from forms.user import RegisterForm
 from io import BytesIO
 import aspose.words as aw
 import os
-from conversions import *
+from file_upload import Upload
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -40,8 +40,6 @@ def index():
         files = db_sess.query(UserFile).filter(UserFile.owner == current_user.id).all()
     else:
         files = None
-    for file in files:
-        print(file)
     return render_template("index.html", files=files)
 
 
@@ -141,12 +139,12 @@ def conversion(upload_id):
     db_sess = db_session.create_session()
     file = db_sess.query(UserFile).filter_by(id=upload_id).first()
     if current_user.id == file.owner == current_user.id:
-        f = open("test.txt")
-        f.write(str(file.data))
-        doc = aw.Document("test.txt")
-        doc.save("Output.pdf")
-        print(file.data)
-
+        doc = aw.Document()
+        builder = aw.DocumentBuilder(doc)
+        builder.writeln(str(file.data).replace('\\r\\n', '')[2:-1])
+        doc.save("output.pdf")
+        # upload = Upload(filename=str(file.filename).replace('.txt', '.pdf'), data=open("output.pdf").read())
+        # db_sess.add(upload)
         db_sess.commit()
         return redirect("/")
 
