@@ -38,8 +38,12 @@ def index():
     if current_user.is_authenticated:
         print(1)
         files = db_sess.query(UserFile).filter(UserFile.owner == current_user.id).all()
+        print(current_user.id)
+        if not os.path.isdir(f"{os.getcwd()}/static/files/id_user_{current_user.id}"):
+            os.mkdir(f"{os.getcwd()}/static/files/id_user_{current_user.id}")
     else:
         files = None
+    print()
     return render_template("index.html", files=files)
 
 
