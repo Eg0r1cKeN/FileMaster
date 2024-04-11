@@ -1,3 +1,5 @@
+import shutil
+
 from flask import Flask, render_template, redirect, make_response, jsonify, request, send_from_directory, send_file
 from flask_login import LoginManager, logout_user, login_required, login_user, current_user, AnonymousUserMixin
 from flask_restful import Api
@@ -127,9 +129,10 @@ def upload():
         db_file = UserFile()
         db_file.filename = file.filename
         db_file.owner = user.id
-        db_file.data = file.read()
+        db_file.directory = f"static/files/id_user_{user.id}/{file.filename}"
         db_sess.add(db_file)
         db_sess.commit()
+        file.save(f"static/files/id_user_{user.id}/{file.filename}")
         return redirect("/")
     return render_template('file_upload.html')
 
@@ -143,12 +146,17 @@ def conversion(upload_id):
     db_sess = db_session.create_session()
     file = db_sess.query(UserFile).filter_by(id=upload_id).first()
     if current_user.id == file.owner == current_user.id:
-        doc = aw.Document()
-        builder = aw.DocumentBuilder(doc)
-        builder.writeln(str(file.data).replace('\\r\\n', '')[2:-1])
-        doc.save("output.pdf")
-        # upload = Upload(filename=str(file.filename).replace('.txt', '.pdf'), data=open("output.pdf").read())
-        # db_sess.add(upload)
+        user = current_user
+        # из txt в pdf
+        doc = aw.Document(f"static/files/id_user_{user.id}/{file.filename}")
+        doc.save(f"static/files/id_user_{user.id}/{''.join(file.filename.split('.')[:-1])}.pdf")
+        db_sess = db_session.create_session()
+        user = current_user
+        db_file = UserFile()
+        db_file.filename = f"{''.join(file.filename.split('.')[:-1])}.pdf"
+        db_file.owner = user.id
+        db_file.directory = f"static/files/id_user_{user.id}/{''.join(file.filename.split('.')[:-1])}.pdf"
+        db_sess.add(db_file)
         db_sess.commit()
         return redirect("/")
 
@@ -159,8 +167,9 @@ def conversion(upload_id):
 def download(upload_id):
     db_sess = db_session.create_session()
     file = db_sess.query(UserFile).filter_by(id=upload_id).first()
+    user = current_user
     if current_user.id == file.owner == current_user.id:
-        return send_file(BytesIO(file.data), download_name=file.filename, as_attachment=True)
+        return send_file(f"static/files/id_user_{user.id}/{file.filename}", download_name=file.filename, as_attachment=True)
     else:
         return
 
@@ -173,6 +182,11 @@ def delete(upload_id):
     if current_user.id == file.owner == current_user.id:
         db_sess.delete(file)
         db_sess.commit()
+        user = current_user
+        try:
+            os.remove(f"static/files/id_user_{user.id}/{file.filename}")
+        except:
+            pass
         return redirect("/")
 
 
