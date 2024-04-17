@@ -1,37 +1,40 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Upload Example</title>
-    <style>
-      .ok{
-
-           font-size: 20px;
-      }
-      .op{
-        font-size: 20px;
-        margin-left: -60px;
-        font-weight: bold;
-        background-color: yellow;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-
-
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+    <link href="static/css/style.css" type="text/css" rel="stylesheet">
+    <title>{{title}}</title>
 </head>
 <body>
-    <div class="center">
-        <link href="static/css/style.css" type="text/css" rel="stylesheet">
-        <p class="effect"> Выберите файл </p>
+<header>
+    <nav class="navbar navbar-expand-lg">
+        <img src="static/img/logo.png" style="width: 50px; height: 50px;">
+        <a class="navbar-brand text-light" href="/">FileMaster</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active d-lg-inline-flex"> <!-- Добавляем класс d-lg-inline-flex -->
+                    <img src="static/img/avatar/{{ current_user.id }}.png" style="width: 50px; height: 50px;">
+                </li>
+                <li class="nav-item active d-lg-inline-flex"> <!-- Добавляем класс d-lg-inline-flex -->
+                    <a class="nav-link text-light" href="/profile">{{ current_user.name }}</a>
+                </li>
+                <li class="nav-item d-lg-inline-flex"> <!-- Добавляем класс d-lg-inline-flex -->
+                    <a class="nav-link text-light" href="/logout">Выйти</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+    <div class="file-upload">
         <form method="POST" action="/upload" enctype="multipart/form-data">
-            <input class="ok" type="file" name="file">
-            <button class="op">Загрузить</button>
+            <input type="file" name="file">
+            <button type="submit">Загрузить</button>
         </form>
     </div>
-
 </body>
 </html>

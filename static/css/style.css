@@ -1,45 +1,22 @@
-.effect {
-  font: bold 5em sans-serif;
-  text-align: center;
-  margin: .5em 0 0 0;
-  color: green; /* fallback */
-  text-shadow: 0 6px 3px rgba(0,0,0,.9)
+body {
+    margin-top: 0; /* Убираем верхний отступ у body */
+    padding-top: 0; /* Убираем верхний отступ у body */
+    background-color: #212121; /* Цвет фона */
+    color: #FFFFFF; /* Белый текст */
+    height: 100vh; /* Устанавливаем высоту body в 100% высоты окна просмотра */
+    overflow-y: auto; /* Добавляем вертикальную прокрутку, если содержимое больше высоты экрана */
 }
-
-.inner
-{
-    display: inline-block;
+.navbar {
+    background-color: #171717; /* Цвет верхней панели */
 }
-
-/* if -webkit-background-clip: text and @supports are supported */
-@supports (-webkit-background-clip: text) {
-
-    .effect {
-        text-align: left;
-        background: url('http://www.css3create.com/squelettes/images/articles/grass-texture.jpg');
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        -webkit-filter: drop-shadow(0 6px 3px rgba(0,0,0,.9));
-        text-shadow: none;
-    }
-
+.btn-group {
+    margin-right: 20px; /* Оставляем отступ между файлами */
 }
-
-/* if -webkit-background-clip: text is not supported, but @supports is :) */
-@supports not (-webkit-background-clip: text) {
-
-    .effect {
-        filter: url('#filter');
-        text-shadow: none;
-        user-select: none;
-    }
-
+.btn-secondary, .btn-success, .btn-primary, .nav-link {
+    color: #FFFFFF; /* Белый текст для кнопок и ссылок */
+.btn-secondary {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: calc(100% - 40px); /* Adjust width to accommodate delete button */
 }
-
-
-html {
-  background: #222;
-  text-align: top;
-  color: #aaa;
-}
-

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+    <link href="static/css/style.css" type="text/css" rel="stylesheet">
+    <title>{{title}}</title>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand text-light" href="/">FileMaster</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active d-lg-inline-flex"> <!-- Добавляем класс d-lg-inline-flex -->
+                    <img src="static/img/avatar/{{ current_user.id }}.png" style="width: 50px; height: 50px;">
+                </li>
+                <li class="nav-item active d-lg-inline-flex">
+                    <a class="nav-link text-light" href="/profile">{{ current_user.name }}</a>
+                </li>
+                <li class="nav-item d-lg-inline-flex">
+                    <a class="nav-link text-light" href="/logout">Выйти</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<div class="container mt-5 mx-0">
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Изменить имя</h2>
+            <form action="/change_username" method="post">
+                <div class="form-group">
+                    <label for="new_username">Новое имя:</label>
+                    <input type="text" class="form-control" id="new_username" name="new_username" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Изменить имя</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h2>Изменить пароль</h2>
+            <form action="/change_password" method="post">
+                <div class="form-group">
+                    <label for="new_password">Новый пароль:</label>
+                    <input type="password" class="form-control" id="new_password" name="new_password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Изменить пароль</button>
+            </form>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <h2>Загрузить аватар</h2>
+            <!-- Форма для загрузки аватара -->
+                <div class="avatar-upload">
+                    <form method="POST" action="/upload_avatar" enctype="multipart/form-data">
+                        <input type="file" name="file" accept="image/*" required>
+                        <button type="submit" class="btn btn-primary">Загрузить аватар</button>
+                    </form>
+                </div>
+        </div>
+        <div class="col-md-6">
+            <h2>Удалить аккаунт</h2>
+            <p>Внимание! Удаление аккаунта приведет к удалению всех ваших файлов и необратимо.</p>
+            <form>
+                <button type="button" class="btn btn-danger" onclick="window.location.href = 'delete_account'">Удалить аккаунт</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
