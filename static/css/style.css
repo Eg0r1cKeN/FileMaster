@@ -8,6 +8,8 @@ body {
 }
 .navbar {
     background-color: #171717; /* Цвет верхней панели */
+    justify-content: flex-start;
+    min-width: 0px;
 }
 .btn-group {
     margin-right: 20px; /* Оставляем отступ между файлами */

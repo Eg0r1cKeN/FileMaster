@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, make_response, jsonify, request, send_from_directory, send_file
-from flask_login import LoginManager, logout_user, login_required, login_user, current_user, AnonymousUserMixin
+from flask_login import LoginManager, logout_user, login_required, login_user, current_user
 from flask_restful import Api
 from data.users import User
 from data.user_file import UserFile
@@ -9,10 +9,19 @@ from forms.user import RegisterForm
 import os
 from waitress import serve
 import shutil
+import ssl
+from hashlib import md5
+from secret_key import flask_key
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+app.config['SECRET_KEY'] = flask_key
 api = Api(app)
+
+certfile = 'ssl/certificate.crt'
+keyfile = 'ssl/key.key'
+
+context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+context.load_cert_chain(certfile, keyfile)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -21,13 +30,42 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
-    return db_sess.query(User).get(user_id)
+    return db_sess.get(User, user_id)
 
 
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico',
                                mimetype='image/vnd.microsoft.icon')
+
+
+@app.route('/apple-touch-icon.png', methods=['GET'])
+def apple_touch():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'apple-touch-icon.png', mimetype='image/png')
+
+
+@app.route('/apple-touch-icon-precomposed.png', methods=['GET'])
+def apple_touch_p():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'apple-touch-icon-precomposed.png', mimetype='image/png')
+
+
+@app.route('/robots.txt', methods=['GET'])
+def robots():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'robots.txt')
+
+
+@app.route('/sitemap.xml', methods=['GET'])
+def sitemap():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'sitemap.xml')
+
+
+@app.route('/google3f153d10dc591236.html', methods=['GET'])
+def google():
+    return render_template('google3f153d10dc591236.html')
 
 
 @app.route('/files')
@@ -67,8 +105,8 @@ def reqister():
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
-        shutil.copyfile('static/img/avatar/default_avatar.png', f'files/avatar/{current_user.id}.png')
-        return redirect('/files')
+        shutil.copyfile('static/img/avatar/default_avatar.png', f'static/img/avatar/{user.id}.png')
+        return redirect('/')
     return render_template('register.html', title='Регистрация', form=form)
 
 
@@ -91,6 +129,7 @@ def logout():
     logout_user()
     return redirect("/")
 
+
 @app.route('/profile')
 @login_required
 def profile():
@@ -104,14 +143,29 @@ def upload():
         db_sess = db_session.create_session()
         user = current_user
         file = request.files['file']
-        db_file = UserFile()
-        db_file.filename = file.filename
-        db_file.owner = user.id
-        db_file.directory = f"files/id_user_{user.id}/{file.filename}"
-        db_sess.add(db_file)
-        db_sess.commit()
-        file.save(f"files/id_user_{user.id}/{file.filename}")
-        return redirect("/")
+        if file:
+            # Вычисляем хэш загружаемого файла
+            file_hash = md5(file.read()).hexdigest()
+
+            # Проверяем, нет ли уже такого файла в базе данных
+            existing_file = db_sess.query(UserFile).filter_by(hash=file_hash).first()
+            if existing_file:
+                return "Файл с таким содержимым уже загружен"
+
+            # Сохраняем информацию о файле в базе данных
+            db_file = UserFile()
+            db_file.filename = file.filename
+            db_file.owner = user.id
+            db_file.directory = f"files/id_user_{user.id}/{file.filename}"
+            db_file.hash = file_hash
+            db_sess.add(db_file)
+            db_sess.commit()
+
+            # Сохраняем сам файл на сервере
+            file.seek(0)  # Возвращаем указатель на начало файла
+            file.save(f"files/id_user_{user.id}/{file.filename}")
+
+            return redirect("/")
     return render_template('file_upload.html')
 
 
@@ -148,14 +202,14 @@ def delete(upload_id):
 @login_required
 def delete_account():
     db_sess = db_session.create_session()
-    user = db_sess.query(User).get(current_user.id)
+    user = db_sess.get(User, current_user.id)
     db_sess.delete(user)
     db_sess.commit()
     shutil.rmtree(f"files/id_user_{user.id}")
     return redirect("/")
 
 
-@app.route('/upload_avatar', methods=['GET', 'POST'])
+@app.route('/upload_avatar', methods=['POST'])
 @login_required
 def upload_avatar():
     if request.method == 'POST':
@@ -165,17 +219,101 @@ def upload_avatar():
     return redirect('/')
 
 
+@app.route('/change_username', methods=['GET', 'POST'])
+@login_required
+def change_username():
+    if request.method == 'POST':
+        new_name = request.form['new_username']
+        db_sess = db_session.create_session()
+        user_with_same_name = db_sess.query(User).filter(User.name == new_name).first()
+        if user_with_same_name:
+            return render_template('profile.html',
+                                   message="Это имя пользователя уже занято. Пожалуйста, выберите другое.")
+        else:
+            user = db_sess.get(User, current_user.id)
+            user.name = new_name
+            db_sess.commit()
+            return redirect('/')
+
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        new_password = request.form['new_password']
+        db_sess = db_session.create_session()
+        user = db_sess.get(User, current_user.id)
+        user.set_password(new_password)
+        db_sess.commit()
+        return redirect('/')
+
+
+@app.route('/admin')
+@login_required
+def admin_panel():
+    db_sess = db_session.create_session()
+    users = db_sess.query(User).all()
+    if current_user.admin == 1 or current_user.owner == 1:
+        return render_template('admin_panel.html', users=users)
+    else:
+        return redirect('/')
+
+
+@app.route('/login_as/<user_id>')
+@login_required
+def login_as(user_id):
+    if current_user.admin == 1 or current_user.owner == 1:
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == user_id).first()
+        if user.admin == 1 or current_user.owner == 1:
+            if current_user.owner == 1:
+                login_user(user, True)
+                return redirect('/')
+            else:
+                return redirect("/admin")
+        else:
+            login_user(user, True)
+            return redirect('/')
+    else:
+        return redirect('/')
+
+
+@app.route('/set_admin/<user_id>')
+@login_required
+def set_admin(user_id):
+    if current_user.owner == 1:
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == user_id).first()
+        user.admin = 1
+        db_sess.commit()
+        return redirect("/admin")
+    else:
+        return redirect('/admin')
+
+
+@app.route('/set_user/<user_id>')
+@login_required
+def set_user(user_id):
+    if current_user.owner == 1:
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == user_id).first()
+        user.admin = 0
+        db_sess.commit()
+        return redirect("/admin")
+    else:
+        return redirect('/admin')
+
 
 @app.errorhandler(404)
-def not_found():
+def not_found(error):
     return make_response(jsonify({'error': '404 Not Found'}), 404)
 
 
 @app.errorhandler(400)
-def bad_request():
+def bad_request(error):
     return make_response(jsonify({'error': 'Bad Request'}), 400)
 
 
 if __name__ == '__main__':
     db_session.global_init("db/database.db")
-    serve(app, port=80, host='127.0.0.1')
+    serve(app, port=5000, host='127.0.0.1')

@@ -12,24 +12,8 @@
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-expand-lg">
-        <a class="navbar-brand text-light" href="/">FileMaster</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item active d-lg-inline-flex"> <!-- Добавляем класс d-lg-inline-flex -->
-                    <img src="static/img/avatar/{{ current_user.id }}.png" style="width: 50px; height: 50px;">
-                </li>
-                <li class="nav-item active d-lg-inline-flex">
-                    <a class="nav-link text-light" href="/profile">{{ current_user.name }}</a>
-                </li>
-                <li class="nav-item d-lg-inline-flex">
-                    <a class="nav-link text-light" href="/logout">Выйти</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    {% include 'navbar.html' %}
 </header>
-
 <div class="container mt-5 mx-0">
     <div class="row">
         <div class="col-md-6">
@@ -40,6 +24,7 @@
                     <input type="text" class="form-control" id="new_username" name="new_username" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Изменить имя</button>
+                {{message}}
             </form>
         </div>
         <div class="col-md-6">
@@ -56,7 +41,6 @@
     <div class="row mt-5">
         <div class="col-md-6">
             <h2>Загрузить аватар</h2>
-            <!-- Форма для загрузки аватара -->
                 <div class="avatar-upload">
                     <form method="POST" action="/upload_avatar" enctype="multipart/form-data">
                         <input type="file" name="file" accept="image/*" required>

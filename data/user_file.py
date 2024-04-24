@@ -14,3 +14,4 @@ class UserFile(SqlAlchemyBase, UserMixin, SerializerMixin):
     filename = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     owner = sqlalchemy.Column(sqlalchemy.Integer)
     directory = sqlalchemy.Column(sqlalchemy.String)
+    hash = sqlalchemy.Column(sqlalchemy.String)

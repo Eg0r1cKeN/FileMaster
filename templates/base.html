@@ -12,14 +12,7 @@
 </head>
 <body>
 <header>
-    {% if current_user.is_authenticated %}
-        <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
-    {% else %}
-        <p>
-            <a class="btn btn-primary" href="/register">Зарегистрироваться</a>
-            <a class="btn btn-success" href="/login">Войти</a>
-        </p>
-    {% endif %}
+    {% include 'navbar.html' %}
 </header>
 <main role="main" class="container">
     <h1>Добро пожаловать на сайт FileMaster</h1>

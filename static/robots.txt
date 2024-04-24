@@ -1,0 +1,3 @@
+user-agent: *
+
+Sitemap: https://tap1x.ru/sitemap.xml

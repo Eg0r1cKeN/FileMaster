@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <!-- Главная страница -->
+    <url>
+        <loc>https://tap1x.ru/</loc>
+        <lastmod>2024-04-24</lastmod>
+        <priority>1.0</priority>
+    </url>
+    <!-- Страница Files -->
+    <url>
+        <loc>https://tap1x.ru/files</loc>
+        <!-- Дата последнего изменения неизвестна -->
+        <priority>0.8</priority>
+    </url>
+    <!-- Страница Register -->
+    <url>
+        <loc>https://tap1x.ru/register</loc>
+        <!-- Дата последнего изменения неизвестна -->
+        <priority>0.7</priority>
+    </url>
+    <!-- Страница Login -->
+    <url>
+        <loc>https://tap1x.ru/login</loc>
+        <!-- Дата последнего изменения неизвестна -->
+        <priority>0.7</priority>
+    </url>
+    <!-- Страница Profile -->
+    <url>
+        <loc>https://tap1x.ru/profile</loc>
+        <!-- Дата последнего изменения неизвестна -->
+        <priority>0.7</priority>
+    </url>
+</urlset>

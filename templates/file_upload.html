@@ -9,32 +9,121 @@
           crossorigin="anonymous">
     <link href="static/css/style.css" type="text/css" rel="stylesheet">
     <title>{{title}}</title>
+     <style>
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 50px;
+            margin-left: 20px; /* Добавлено */
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-upload label {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin-bottom: 10px; /* Добавлено */
+        }
+
+        .file-upload label:hover {
+            background-color: #0056b3;
+        }
+
+        .file-upload button[type="submit"] {
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .file-upload button[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+        #file-name {
+            margin-top: 10px;
+            margin-left: 5px; /* Добавлено */
+        }
+
+        /* Стили для прогресса загрузки */
+        .progress {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+    </style>
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-expand-lg">
-        <img src="static/img/logo.png" style="width: 50px; height: 50px;">
-        <a class="navbar-brand text-light" href="/">FileMaster</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item active d-lg-inline-flex"> <!-- Добавляем класс d-lg-inline-flex -->
-                    <img src="static/img/avatar/{{ current_user.id }}.png" style="width: 50px; height: 50px;">
-                </li>
-                <li class="nav-item active d-lg-inline-flex"> <!-- Добавляем класс d-lg-inline-flex -->
-                    <a class="nav-link text-light" href="/profile">{{ current_user.name }}</a>
-                </li>
-                <li class="nav-item d-lg-inline-flex"> <!-- Добавляем класс d-lg-inline-flex -->
-                    <a class="nav-link text-light" href="/logout">Выйти</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    {% include 'navbar.html' %}
 </header>
+<div class="container">
     <div class="file-upload">
-        <form method="POST" action="/upload" enctype="multipart/form-data">
-            <input type="file" name="file">
-            <button type="submit">Загрузить</button>
+        <form id="upload-form" method="POST" action="/upload" enctype="multipart/form-data">
+            <input id="file-upload" type="file" name="file" onchange="updateFileName(this)">
+            <label for="file-upload">Выберите файл</label>
+            <span id="file-name"></span>
         </form>
+        <div class="progress">
+            <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
     </div>
+</div>
+
+<script>
+    function updateFileName(input) {
+        const fileNameSpan = document.getElementById('file-name');
+        if (input.files.length > 0) {
+            fileNameSpan.innerText = `Загружается файл: ${input.files[0].name}`;
+            uploadFile(input.files[0]);
+        } else {
+            fileNameSpan.innerText = '';
+        }
+    }
+
+    function uploadFile(file) {
+        const xhr = new XMLHttpRequest();
+        const progressBar = document.getElementById('progress-bar');
+
+        xhr.open('POST', '/upload', true);
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable) {
+                const percentComplete = (e.loaded / e.total) * 100;
+                progressBar.style.width = percentComplete + '%';
+                progressBar.setAttribute('aria-valuenow', percentComplete);
+            }
+        };
+
+        xhr.onload = function() {
+            // Обработка завершения загрузки
+            if (xhr.status === 200) {
+                // Загрузка завершена успешно
+                console.log('Файл успешно загружен');
+                // Выполнить редирект на страницу файлов
+                window.location.href = '/files';
+            } else {
+                // Произошла ошибка при загрузке файла
+                console.error('Произошла ошибка при загрузке файла');
+            }
+        };
+
+        const formData = new FormData();
+        formData.append('file', file);
+        xhr.send(formData);
+    }
+</script>
 </body>
 </html>
