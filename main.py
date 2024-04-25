@@ -1,3 +1,4 @@
+# импортируем библиотеки
 from flask import Flask, render_template, redirect, make_response, jsonify, request, send_from_directory, send_file
 from flask_login import LoginManager, logout_user, login_required, login_user, current_user
 from flask_restful import Api
@@ -68,6 +69,7 @@ def google():
     return render_template('google3f153d10dc591236.html')
 
 
+# демонстарция файлов
 @app.route('/files')
 @login_required
 def index():
@@ -81,6 +83,7 @@ def index():
     return render_template("index.html", files=files)
 
 
+# главная страница
 @app.route('/')
 @app.route('/index')
 def files_page():
@@ -90,6 +93,7 @@ def files_page():
         return render_template('base.html')
 
 
+# регистрация
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
     form = RegisterForm()
@@ -110,6 +114,7 @@ def reqister():
     return render_template('register.html', title='Регистрация', form=form)
 
 
+# авторизация
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -130,6 +135,7 @@ def logout():
     return redirect("/")
 
 
+# профиль
 @app.route('/profile')
 @login_required
 def profile():
@@ -169,6 +175,7 @@ def upload():
     return render_template('file_upload.html')
 
 
+# скачивание файлов
 @app.route('/download/<upload_id>')
 @login_required
 def download(upload_id):
@@ -182,6 +189,7 @@ def download(upload_id):
         return
 
 
+# удаление файлов
 @app.route('/delete/<upload_id>')
 @login_required
 def delete(upload_id):
@@ -198,6 +206,7 @@ def delete(upload_id):
         return redirect("/")
 
 
+# удаление аккаунта
 @app.route('/delete_account')
 @login_required
 def delete_account():
@@ -209,6 +218,7 @@ def delete_account():
     return redirect("/")
 
 
+# загрузка аватарки
 @app.route('/upload_avatar', methods=['POST'])
 @login_required
 def upload_avatar():
@@ -219,6 +229,7 @@ def upload_avatar():
     return redirect('/')
 
 
+# изменение имени пользователя
 @app.route('/change_username', methods=['GET', 'POST'])
 @login_required
 def change_username():
@@ -236,6 +247,7 @@ def change_username():
             return redirect('/')
 
 
+# изменение пароля
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
@@ -248,6 +260,7 @@ def change_password():
         return redirect('/')
 
 
+# админ (пользователь)
 @app.route('/admin')
 @login_required
 def admin_panel():
@@ -259,7 +272,7 @@ def admin_panel():
         return redirect('/')
 
 
-@app.route('/login_as/<user_id>')
+# проверка админа
 @login_required
 def login_as(user_id):
     if current_user.admin == 1 or current_user.owner == 1:
@@ -278,6 +291,7 @@ def login_as(user_id):
         return redirect('/')
 
 
+# добавление админа
 @app.route('/set_admin/<user_id>')
 @login_required
 def set_admin(user_id):
@@ -291,6 +305,7 @@ def set_admin(user_id):
         return redirect('/admin')
 
 
+# изменение пользователя
 @app.route('/set_user/<user_id>')
 @login_required
 def set_user(user_id):
