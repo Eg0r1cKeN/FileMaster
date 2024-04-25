@@ -28,48 +28,61 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
+# Загрузчик пользователей
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.get(User, user_id)
 
 
+# Иконка сайта
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico',
                                mimetype='image/vnd.microsoft.icon')
 
 
+# Иконка сайта для IOS
 @app.route('/apple-touch-icon.png', methods=['GET'])
 def apple_touch():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'apple-touch-icon.png', mimetype='image/png')
 
 
+# Иконка сайта для IOS
 @app.route('/apple-touch-icon-precomposed.png', methods=['GET'])
 def apple_touch_p():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'apple-touch-icon-precomposed.png', mimetype='image/png')
 
 
+# Файл для поисковых систем
 @app.route('/robots.txt', methods=['GET'])
 def robots():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'robots.txt')
 
 
+# Карта сайта для поисковых систем
 @app.route('/sitemap.xml', methods=['GET'])
 def sitemap():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'sitemap.xml')
 
 
+# Верификация сайта в google
 @app.route('/google3f153d10dc591236.html', methods=['GET'])
 def google():
     return render_template('google3f153d10dc591236.html')
 
 
-# демонстарция файлов
+# Верификация сайта в yandex
+@app.route('/yandex_0cd3aba85eb52f46.html', methods=['GET'])
+def yandex():
+    return render_template('yandex_0cd3aba85eb52f46.html')
+
+
+# страница с файлами
 @app.route('/files')
 @login_required
 def index():
@@ -128,6 +141,7 @@ def login():
     return render_template('login.html', title='Авторизация', form=form)
 
 
+# Выход из системы
 @app.route('/logout')
 @login_required
 def logout():
@@ -142,6 +156,7 @@ def profile():
     return render_template('profile.html')
 
 
+# Загрузка файлов
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
@@ -272,7 +287,7 @@ def admin_panel():
         return redirect('/')
 
 
-# проверка админа
+# вход под другим пользователем (для администраторов)
 @login_required
 def login_as(user_id):
     if current_user.admin == 1 or current_user.owner == 1:
@@ -305,7 +320,7 @@ def set_admin(user_id):
         return redirect('/admin')
 
 
-# изменение пользователя
+# установить права пользователя
 @app.route('/set_user/<user_id>')
 @login_required
 def set_user(user_id):
@@ -319,16 +334,19 @@ def set_user(user_id):
         return redirect('/admin')
 
 
+# Ошибка 404
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': '404 Not Found'}), 404)
 
 
+# Ошибка 400
 @app.errorhandler(400)
 def bad_request(error):
     return make_response(jsonify({'error': 'Bad Request'}), 400)
 
 
+# Запуск сайта
 if __name__ == '__main__':
     db_session.global_init("db/database.db")
     serve(app, port=5000, host='127.0.0.1')
