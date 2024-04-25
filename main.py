@@ -28,36 +28,42 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
+# Загрузчик пользователей
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.get(User, user_id)
 
 
+# Иконка сайта
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico',
                                mimetype='image/vnd.microsoft.icon')
 
 
+# Иконка сайта для IOS
 @app.route('/apple-touch-icon.png', methods=['GET'])
 def apple_touch():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'apple-touch-icon.png', mimetype='image/png')
 
 
+# Иконка сайта для IOS
 @app.route('/apple-touch-icon-precomposed.png', methods=['GET'])
 def apple_touch_p():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'apple-touch-icon-precomposed.png', mimetype='image/png')
 
 
+# Файл для поисковых систем
 @app.route('/robots.txt', methods=['GET'])
 def robots():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'robots.txt')
 
 
+# Карта сайта для поисковых систем
 @app.route('/sitemap.xml', methods=['GET'])
 def sitemap():
     return send_from_directory(os.path.join(app.root_path, 'static'),
@@ -67,6 +73,11 @@ def sitemap():
 @app.route('/google3f153d10dc591236.html', methods=['GET'])
 def google():
     return render_template('google3f153d10dc591236.html')
+
+
+@app.route('/yandex_0cd3aba85eb52f46.html', methods=['GET'])
+def yandex():
+    return render_template('yandex_0cd3aba85eb52f46.html')
 
 
 # демонстарция файлов
